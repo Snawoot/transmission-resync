@@ -67,6 +67,6 @@ func run() int {
 
 func main() {
 	log.Default().SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile)
-	log.Default().SetPrefix("TRANSMISSION-MONITOR: ")
+	log.Default().SetPrefix("TRANSMISSION-RESYNC: ")
 	os.Exit(run())
 }
