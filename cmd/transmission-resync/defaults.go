@@ -18,4 +18,5 @@ func setDefaults(d defaulter) {
 	d.SetDefault("rpc.httptimeout", time.Duration(0))
 	d.SetDefault("rpc.useragent", "transmission-resync/"+version)
 	d.SetDefault("rpc.debug", false)
+	d.SetDefault("total_timeout", 30*time.Second)
 }

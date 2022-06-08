@@ -35,6 +35,15 @@ func run() int {
 		log.Fatalf("unable to read config file: %s", err)
 	}
 
+	var chainCfg Chain
+	if err := viper.UnmarshalKey("chain", &chainCfg); err != nil {
+		log.Fatalf("unable to unmarshal `chain` section of config")
+	}
+
+	for i, chainItem := range chainCfg {
+		log.Printf("chainCfg[%d] = %#v", i, chainItem)
+	}
+
 	trpc, err := transmissionrpc.New(
 		viper.GetString("rpc.host"),
 		viper.GetString("rpc.user"),
