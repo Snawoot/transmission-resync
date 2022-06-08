@@ -15,4 +15,4 @@
 # vendor/
 bin/
 *.snap
-transmission-monitor.yaml
+transmission-resync.yaml

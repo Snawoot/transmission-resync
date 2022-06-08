@@ -19,7 +19,7 @@ var (
 
 func run() int {
 	fs := flag.NewFlagSet("transmission-resync", flag.ExitOnError)
-	configFilename := fs.String("conf", filepath.Join(home, ".config", "transmission-monitor.yaml"), "path to configuration file")
+	configFilename := fs.String("conf", filepath.Join(home, ".config", "transmission-resync.yaml"), "path to configuration file")
 	showVersion := fs.Bool("version", false, "show program version and exit")
 	fs.Parse(os.Args[1:])
 
