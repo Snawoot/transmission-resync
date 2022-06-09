@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/hekmon/transmissionrpc/v2"
 	"github.com/spf13/viper"
@@ -20,12 +21,18 @@ var (
 func run() int {
 	fs := flag.NewFlagSet("transmission-resync", flag.ExitOnError)
 	configFilename := fs.String("conf", filepath.Join(home, ".config", "transmission-resync.yaml"), "path to configuration file")
+	targetHash := fs.String("hash", "", "target torrent hash")
 	showVersion := fs.Bool("version", false, "show program version and exit")
 	fs.Parse(os.Args[1:])
 
 	if *showVersion {
 		fmt.Println(version)
 		return 0
+	}
+
+	lowerHash := strings.ToLower(*targetHash)
+	if lowerHash == "" {
+		log.Fatal("target hash is not specified! please use -hash option.")
 	}
 
 	viper.SetConfigType("yaml")
@@ -66,9 +73,19 @@ func run() int {
 		log.Fatalf("unable to get torrents: %v", err)
 	}
 
-	t := make([]*transmissionrpc.Torrent, len(torrents))
+	var needle *transmissionrpc.Torrent
 	for i := range torrents {
-		t[i] = &torrents[i]
+		if torrents[i].HashString == nil {
+			continue
+		}
+		if strings.ToLower(*torrents[i].HashString) == lowerHash {
+			torrent := torrents[i]
+			needle = &torrent
+			break
+		}
+	}
+	if needle == nil {
+		log.Fatalf("requested torrent not found")
 	}
 
 	return 0
