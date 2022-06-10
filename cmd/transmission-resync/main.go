@@ -106,6 +106,10 @@ func run() int {
 	}
 
 	log.Printf("res = %q", res)
+	if res == "" {
+		log.Println("no torrent update was found!")
+		return 3
+	}
 
 	return 0
 }
