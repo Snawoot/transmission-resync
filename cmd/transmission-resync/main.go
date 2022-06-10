@@ -9,6 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Snawoot/transmission-resync/hub"
+	"github.com/Snawoot/transmission-resync/spoke"
+
 	"github.com/hekmon/transmissionrpc/v2"
 	"github.com/spf13/viper"
 )
@@ -40,6 +43,13 @@ func run() int {
 	setDefaults(viper.GetViper())
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("unable to read config file: %s", err)
+	}
+
+	ctx := context.Background()
+	if dur := viper.GetDuration("total_timeout"); dur != 0 {
+		ctx1, cl := context.WithTimeout(ctx, dur)
+		defer cl()
+		ctx = ctx1
 	}
 
 	var chainCfg Chain

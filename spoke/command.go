@@ -13,6 +13,11 @@ import (
 	"github.com/hekmon/transmissionrpc/v2"
 )
 
+type Spoke struct {
+	command []string
+	timeout time.Duration
+}
+
 func NewSpoke(timeout time.Duration, command []string) *Spoke {
 	return &Spoke{
 		command: command,
@@ -26,11 +31,12 @@ func (s *Spoke) Query(ctx context.Context, t *transmissionrpc.Torrent) (string, 
 	}
 
 	if s.timeout != 0 {
-		ctx, cl = context.WithTimeout(ctx, s.timeout)
+		ctx1, cl := context.WithTimeout(ctx, s.timeout)
 		defer cl()
+		ctx = ctx1
 	}
 
-	subprocess := exec.CommandContext(ctx, n.command[0], n.command[1:]...)
+	subprocess := exec.CommandContext(ctx, s.command[0], s.command[1:]...)
 	subprocess.Stderr = os.Stderr
 
 	txPipe, err := subprocess.StdinPipe()
@@ -48,5 +54,9 @@ func (s *Spoke) Query(ctx context.Context, t *transmissionrpc.Torrent) (string, 
 		}
 	}()
 
-	return subprocess.Output()
+	res, err := subprocess.Output()
+	if err != nil {
+		return "", fmt.Errorf("spoke %#v: subprocess invocation failed: %w", s.command, err)
+	}
+	return string(res), nil
 }
