@@ -1,6 +1,7 @@
 package spoke
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -58,5 +59,5 @@ func (s *Spoke) Query(ctx context.Context, t *transmissionrpc.Torrent) (string, 
 	if err != nil {
 		return "", fmt.Errorf("spoke %#v: subprocess invocation failed: %w", s.command, err)
 	}
-	return string(res), nil
+	return string(bytes.TrimRight(res, "\r\n")), nil
 }

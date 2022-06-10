@@ -99,16 +99,35 @@ func run() int {
 	if needle == nil {
 		log.Fatalf("requested torrent not found")
 	}
+	if needle.ID == nil {
+		log.Fatalf("requested torrent has no ID!")
+	}
 
 	res, err := hub.Query(ctx, needle)
 	if err != nil {
 		log.Fatalf("error querying hub: %v", err)
 	}
 
-	log.Printf("res = %q", res)
+	log.Printf("resolved new torrent link: %q", res)
 	if res == "" {
 		log.Println("no torrent update was found!")
 		return 3
+	}
+
+	log.Printf("removing old torrent with ID=%d...", *needle.ID)
+	if err := trpc.TorrentRemove(
+		ctx, transmissionrpc.TorrentRemovePayload{IDs: []int64{*needle.ID}},
+	); err != nil {
+		log.Fatalf("unable to remove old torrent: %v", err)
+	}
+
+	log.Printf("removed. Adding new torrent with link %q", res)
+	if t, err := trpc.TorrentAdd(
+		ctx, transmissionrpc.TorrentAddPayload{Filename: &res},
+	); err != nil {
+		log.Fatalf("unable to add new torrent: %v", err)
+	} else if t.ID != nil {
+		log.Printf("Added torrent with ID %d", *t.ID)
 	}
 
 	return 0
