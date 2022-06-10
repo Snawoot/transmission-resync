@@ -57,9 +57,11 @@ func run() int {
 		log.Fatalf("unable to unmarshal `chain` section of config")
 	}
 
-	for i, chainItem := range chainCfg {
-		log.Printf("chainCfg[%d] = %#v", i, chainItem)
+	var spokes []hub.Spoke
+	for _, chainItem := range chainCfg {
+		spokes = append(spokes, spoke.NewSpoke(chainItem.Timeout, chainItem.Command))
 	}
+	hub := hub.NewHub(spokes)
 
 	trpc, err := transmissionrpc.New(
 		viper.GetString("rpc.host"),
@@ -97,6 +99,13 @@ func run() int {
 	if needle == nil {
 		log.Fatalf("requested torrent not found")
 	}
+
+	res, err := hub.Query(ctx, needle)
+	if err != nil {
+		log.Fatalf("error querying hub: %v", err)
+	}
+
+	log.Printf("res = %q", res)
 
 	return 0
 }

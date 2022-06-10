@@ -2,7 +2,6 @@ package hub
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/hekmon/transmissionrpc/v2"
@@ -32,5 +31,5 @@ func (h *Hub) Query(ctx context.Context, t *transmissionrpc.Torrent) (string, er
 			return resp, nil
 		}
 	}
-	return "", errors.New("hub error: no spoke provided result")
+	return "", nil
 }

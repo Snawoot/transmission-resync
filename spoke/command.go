@@ -50,7 +50,7 @@ func (s *Spoke) Query(ctx context.Context, t *transmissionrpc.Torrent) (string, 
 		enc := json.NewEncoder(txPipe)
 		enc.SetIndent("", "\t")
 		if err := enc.Encode(t); err != nil {
-			log.Print("spoke %#v: unable to export record: %v", s.command, err)
+			log.Printf("spoke %#v: unable to export record: %v", s.command, err)
 		}
 	}()
 
