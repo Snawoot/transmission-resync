@@ -40,6 +40,7 @@ func (s *Spoke) Query(ctx context.Context, t *transmissionrpc.Torrent) (string, 
 	defer txPipe.Close()
 
 	go func() {
+		defer txPipe.Close()
 		enc := json.NewEncoder(txPipe)
 		enc.SetIndent("", "\t")
 		if err := enc.Encode(t); err != nil {
