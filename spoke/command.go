@@ -1,4 +1,4 @@
-package notifier
+package spoke
 
 import (
 	"context"
