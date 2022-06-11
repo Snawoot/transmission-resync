@@ -122,8 +122,12 @@ func run() int {
 	}
 
 	log.Printf("removed. Adding new torrent with link %q", res)
+	falseVal := false
 	if t, err := trpc.TorrentAdd(
-		ctx, transmissionrpc.TorrentAddPayload{Filename: &res},
+		ctx, transmissionrpc.TorrentAddPayload{
+			Filename: &res,
+			Paused: &falseVal,
+		},
 	); err != nil {
 		log.Fatalf("unable to add new torrent: %v", err)
 	} else if t.ID != nil {
